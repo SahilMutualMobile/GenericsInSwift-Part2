@@ -10,13 +10,13 @@ enum PizzaTopping: String {
     case lotsOfCheese = "Lots of cheese"
 }
 
-protocol ItemName {
-    associatedtype type: Comparable
-    var message: String { get }
+protocol RestaurantItem {
+    associatedtype Message = String
+    func acceptOrderItem() -> Message
+    func prepareOrderItem() -> Message
 }
 
-enum PizzaType: String, ItemName {
-    typealias type = String
+enum PizzaType: String, RestaurantItem {
     
     case margherita = "Margherita"
     case farmhouse = "Farmhouse"
@@ -32,59 +32,75 @@ enum PizzaType: String, ItemName {
             return [.corn, .cheese]
         }
     }
-    var message: type {
+    func acceptOrderItem() -> String {
+        "\(self.rawValue) pizza in preparation"
+    }
+    func prepareOrderItem() -> String {
         "\(self.rawValue) pizza is ready!"
     }
 }
 
-enum SideDishType: String, ItemName {
-    
-    typealias type = String
+enum SideDishType: String, RestaurantItem {
     
     case fries = "Fries"
     case calzone = "Calzone"
-    var message: type {
+    
+    func acceptOrderItem() -> String {
+        "\(self.rawValue) side dish in preparation"
+    }
+    func prepareOrderItem() -> String {
         "\(self.rawValue) side dish is ready!"
     }
 }
 
-enum DrinkType: String, ItemName {
-    typealias type = String
+enum DrinkType: String, RestaurantItem {
+    
     case soda = "Soda"
     case lemonade = "Lemonade"
-    var message: type {
+    
+    func acceptOrderItem() -> String {
+        "\(self.rawValue) drink in preparation"
+    }
+    func prepareOrderItem() -> String {
         "\(self.rawValue) drink is ready!"
     }
 }
 
 class PizzaShop {
     //New in Swift 5.7
-    //Protocol 'ItemName' can only be used as a generic constraint because it has Self or associated type requirements
-    func mealOrder(orders: [any ItemName]) {
-        for order in orders {
-            print(order.message)
+    //Protocol 'RestaurantItem' can only be used as a generic constraint because it has Self or associated type requirements
+    var orderNumber: Int = 1
+    func mealOrder(order: [any RestaurantItem]) {
+        print("Order #\(orderNumber) starting")
+        for item in order {
+            print(item.acceptOrderItem())
+            print(item.prepareOrderItem())
         }
+        print("Order #\(orderNumber) complete")
+        orderNumber += 1
     }
     //New in Swift 5.7
     //'some' types are only implemented for the declared type of properties and subscripts and the return type of functions
-    func onePlusOneOffer(order: some ItemName) {
+    func onePlusOneOffer(order: some RestaurantItem) {
+        print("Order #\(orderNumber) starting")
         for _ in 0 ..< 2 {
-            print(order.message)
+            print(order.acceptOrderItem())
+            print(order.prepareOrderItem())
         }
+        print("Order #\(orderNumber) complete")
+        orderNumber += 1
     }
 }
 //New in Swift 5.7
-//Protocol 'ItemName' can only be used as a generic constraint because it has Self or associated type requirements
-let happyMeal1: [any ItemName] = [PizzaType.margherita, SideDishType.fries, DrinkType.lemonade]
-let happyMeal2: [any ItemName] = [PizzaType.farmhouse, SideDishType.calzone, DrinkType.soda]
+//Protocol 'RestaurantItem' can only be used as a generic constraint because it has Self or associated type requirements
+let happyMeal1: [any RestaurantItem] = [PizzaType.margherita, SideDishType.fries, DrinkType.lemonade]
+let happyMeal2: [any RestaurantItem] = [PizzaType.farmhouse, SideDishType.calzone, DrinkType.soda]
 
-let pizzaOrder = PizzaShop()
-pizzaOrder.mealOrder(orders: happyMeal1)
-
-let specialOffer1 = PizzaShop()
-specialOffer1.onePlusOneOffer(order: PizzaType.goldenCorn)
-
-let specialOffer2 = PizzaShop()
-specialOffer2.onePlusOneOffer(order: DrinkType.lemonade)
+let pizzaShop = PizzaShop()
+pizzaShop.mealOrder(order: happyMeal1)
+pizzaShop.mealOrder(order: happyMeal2)
+pizzaShop.mealOrder(order: [SideDishType.calzone, DrinkType.lemonade])
+pizzaShop.onePlusOneOffer(order: PizzaType.goldenCorn)
+pizzaShop.onePlusOneOffer(order: DrinkType.lemonade)
 
 //: [Next](@next)
