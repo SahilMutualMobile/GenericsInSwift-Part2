@@ -67,20 +67,9 @@ enum DrinkType: String, RestaurantItem {
 }
 
 class PizzaShop {
-    //New in Swift 5.7
-    //Protocol 'RestaurantItem' can only be used as a generic constraint because it has Self or associated type requirements
+    
     var orderNumber: Int = 1
-    func mealOrder(order: [any RestaurantItem]) {
-        print("Order #\(orderNumber) starting")
-        for item in order {
-            print(item.acceptOrderItem())
-            print(item.prepareOrderItem())
-        }
-        print("Order #\(orderNumber) complete")
-        orderNumber += 1
-    }
     //New in Swift 5.7
-    //'some' types are only implemented for the declared type of properties and subscripts and the return type of functions
     func onePlusOneOffer(order: some RestaurantItem) {
         print("Order #\(orderNumber) starting")
         for _ in 0 ..< 2 {
@@ -90,11 +79,25 @@ class PizzaShop {
         print("Order #\(orderNumber) complete")
         orderNumber += 1
     }
+    //New in Swift 5.7
+    func mealOrder(order: [any RestaurantItem]) {
+        print("Order #\(orderNumber) starting")
+        for item in order {
+            //New in Swift 5.7
+            print(item.acceptOrderItem())
+            print(item.prepareOrderItem())
+        }
+        print("Order #\(orderNumber) complete")
+        orderNumber += 1
+    }
 }
+
+//Usage
 //New in Swift 5.7
-//Protocol 'RestaurantItem' can only be used as a generic constraint because it has Self or associated type requirements
-let happyMeal1: [any RestaurantItem] = [PizzaType.margherita, SideDishType.fries, DrinkType.lemonade]
-let happyMeal2: [any RestaurantItem] = [PizzaType.farmhouse, SideDishType.calzone, DrinkType.soda]
+let happyMeal1: [any RestaurantItem] =
+[PizzaType.margherita, SideDishType.fries, DrinkType.lemonade]
+let happyMeal2: [any RestaurantItem] =
+[PizzaType.farmhouse, SideDishType.calzone, DrinkType.soda]
 
 let pizzaShop = PizzaShop()
 pizzaShop.mealOrder(order: happyMeal1)
